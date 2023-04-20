@@ -4,10 +4,10 @@ import { without } from "lodash";
 import prismadb from '@/lib/prismadb';
 import serverAuth from "@/lib/serverAuth";
 
-export async function handler(req:NextApiRequest, res: NextApiResponse) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
+        const { currentUser } = await serverAuth(req, res);
         if (req.method == 'POST') {
-            const { currentUser } = await serverAuth(req);
 
             const { movieId } = req.body;
 
@@ -36,7 +36,6 @@ export async function handler(req:NextApiRequest, res: NextApiResponse) {
         }
 
         if (req.method == 'DELETE') {
-            const { currentUser } = await serverAuth(req);
 
             const { movieId } = req.body;
             
@@ -60,6 +59,8 @@ export async function handler(req:NextApiRequest, res: NextApiResponse) {
                     favoriteIds: updatedFavoriteIds,
                 }
             });
+            
+            return res.status(200).json(updatedUser);
         }
 
         return res.status(405).end();
